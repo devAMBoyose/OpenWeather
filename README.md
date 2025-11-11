@@ -66,3 +66,23 @@ npm run dev
 
 # 4️⃣ Visit app
 http://localhost:5173
+
+
+openweather-dashboard/
+├─ server/
+│  ├─ server.js
+│  ├─ routes/weather.js
+│  ├─ .env
+│  └─ package.json
+│
+└─ client/
+   ├─ src/
+   │  ├─ App.jsx
+   │  ├─ main.jsx
+   │  ├─ components/WeatherCard.jsx
+   │  ├─ services/api.js
+   │  └─ styles/
+   │     ├─ base.css
+   │     └─ responsive.css
+   ├─ vite.config.js
+   └─ package.json
