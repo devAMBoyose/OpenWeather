@@ -30,3 +30,39 @@ This project is part of my **Full-Stack Developer Portfolio** under `APIs / Inte
 ---
 
 ## 🧩 Architecture Overview
+- Frontend never exposes your API key.
+- Backend handles errors, caching, and origin validation.
+- CORS allows only safe domains (from `.env`).
+
+---
+
+## 🚀 Live Preview
+
+> 🎯 *Coming soon on my portfolio at [amboyose.com](https://amboyose.com)*  
+> 
+> 📦 For local testing, follow setup below 👇
+
+---
+
+## ⚙️ Installation & Setup
+
+```bash
+# 1️⃣ Clone repository
+git clone https://github.com/<your-username>/openweather-dashboard.git
+cd openweather-dashboard
+
+# 2️⃣ Backend setup
+cd server
+npm install
+cp .env.example .env
+# open .env and set:
+# OPENWEATHER_API_KEY=your_api_key_here
+npm run dev
+
+# 3️⃣ Frontend setup
+cd ../client
+npm install
+npm run dev
+
+# 4️⃣ Visit app
+http://localhost:5173
