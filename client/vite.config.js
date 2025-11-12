@@ -4,9 +4,8 @@ import react from "@vitejs/plugin-react";     // enables React JSX support
 export default defineConfig({
     plugins: [react()],                         // activates React plugin
     server: {
-        port: 5173,                               // local dev port (frontend)
-        proxy: {
-            "/api": "http://localhost:4000"         // redirects any request that starts with /api to your backend
-        }
+        port: 5173,
+        proxy: { "/api": "http://localhost:4000" }
     }
+
 });
