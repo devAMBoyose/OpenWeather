@@ -1,8 +1,8 @@
 // client/src/services/api.js
 const API_BASE =
     import.meta.env.MODE === "production"
-        ? "https://<your-backend-name>.onrender.com" // Render backend URL
-        : "/api"; // dev: Vite proxy
+        ? "https://openweather-backend.onrender.com"
+        : "/api";
 
 export async function fetchWeather(city, units) {
     const params = new URLSearchParams({ city, units });
