@@ -23,6 +23,7 @@ Real-time weather app built with **React (Vite)** and **Node.js/Express**.
 The server hides the OpenWeather API key and adds basic rate-limit + cache.
 
 > Purpose: personal study project and portfolio demo.
+> Live: https://openweather-7rx4.onrender.com/
 
 ---
 
