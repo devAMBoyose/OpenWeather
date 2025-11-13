@@ -8,14 +8,16 @@ export default function App() {
     const [data, setData] = useState(null);
     const [status, setStatus] = useState({ loading: false, error: "" });
 
-    // 🔧 load now takes a plain city string
+    // ✅ load now accepts a plain string: cityName
     async function load(cityName) {
         if (!cityName) return;
 
         try {
             setStatus({ loading: true, error: "" });
-            // ✅ pass plain strings: city + units
+
+            // ✅ correct call: pass plain strings (city, units)
             const res = await fetchCurrentWeather(cityName, units);
+
             setData(res);
             setStatus({ loading: false, error: "" });
         } catch (e) {
@@ -23,12 +25,12 @@ export default function App() {
             setData(null);
             setStatus({
                 loading: false,
-                error: e.message || "Failed to fetch weather"
+                error: e.message || "Failed to fetch weather",
             });
         }
     }
 
-    // initial fetch for default city
+    // Fetch initial data
     useEffect(() => {
         load(city);
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -36,7 +38,7 @@ export default function App() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        load(city);
+        load(city); // Fetch weather again
     };
 
     return (
@@ -57,14 +59,15 @@ export default function App() {
                     placeholder="Search city e.g., Cebu, Tokyo"
                     aria-label="City"
                 />
+
                 <select
                     value={units}
                     onChange={(e) => setUnits(e.target.value)}
-                    aria-label="Units"
                 >
                     <option value="metric">Metric (°C)</option>
                     <option value="imperial">Imperial (°F)</option>
                 </select>
+
                 <button type="submit">Fetch</button>
             </form>
 
