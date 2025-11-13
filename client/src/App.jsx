@@ -8,20 +8,36 @@ export default function App() {
     const [data, setData] = useState(null);
     const [status, setStatus] = useState({ loading: false, error: "" });
 
-    async function load(q) {
+    // 🔧 load now takes a plain city string
+    async function load(cityName) {
+        if (!cityName) return;
+
         try {
             setStatus({ loading: true, error: "" });
-            const res = await fetchCurrentWeather({ ...q, units });
+            // ✅ pass plain strings: city + units
+            const res = await fetchCurrentWeather(cityName, units);
             setData(res);
+            setStatus({ loading: false, error: "" });
         } catch (e) {
+            console.error(e);
             setData(null);
-            setStatus({ loading: false, error: e.message });
-            return;
+            setStatus({
+                loading: false,
+                error: e.message || "Failed to fetch weather"
+            });
         }
-        setStatus({ loading: false, error: "" });
     }
 
-    useEffect(() => { load({ city }); }, []); // initial
+    // initial fetch for default city
+    useEffect(() => {
+        load(city);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        load(city);
+    };
 
     return (
         <main className="wrap">
@@ -33,7 +49,7 @@ export default function App() {
                 <span className="chip">Client-side</span>
             </header>
 
-            <form className="controls" onSubmit={(e) => { e.preventDefault(); load({ city }); }}>
+            <form className="controls" onSubmit={handleSubmit}>
                 <input
                     type="text"
                     value={city}
@@ -41,14 +57,22 @@ export default function App() {
                     placeholder="Search city e.g., Cebu, Tokyo"
                     aria-label="City"
                 />
-                <select value={units} onChange={(e) => setUnits(e.target.value)}>
+                <select
+                    value={units}
+                    onChange={(e) => setUnits(e.target.value)}
+                    aria-label="Units"
+                >
                     <option value="metric">Metric (°C)</option>
                     <option value="imperial">Imperial (°F)</option>
                 </select>
                 <button type="submit">Fetch</button>
             </form>
 
-            <WeatherCard data={data} loading={status.loading} error={status.error} />
+            <WeatherCard
+                data={data}
+                loading={status.loading}
+                error={status.error}
+            />
         </main>
     );
 }
