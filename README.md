@@ -6,8 +6,6 @@ The server hides the OpenWeather API key and adds basic rate-limit + cache.
 > Purpose: personal study project and portfolio demo.
 > Live: https://openweather-frontend.onrender.com/
 
----
-
 ## Features
 - Secure server proxy (no API key in browser)
 - Live weather by city
