@@ -1,71 +1,45 @@
-import express from "express";
-import fetch from "node-fetch";
+import { Router } from "express";
 
-const router = express.Router();
-const cache = new Map();
-const TTL_MS = 1000 * 60 * 2;
-
-function makeKey(q) { return JSON.stringify(q); }
+const router = Router();
+const API_KEY = process.env.OPENWEATHER_API_KEY;
+const BASE_URL = "https://api.openweathermap.org/data/2.5";
 
 router.get("/current", async (req, res) => {
     try {
-        const { city, lat, lon, units = "metric" } = req.query;
-        if (!city && !(lat && lon)) {
-            return res.status(400).json({ error: "Provide ?city= or ?lat=&lon=" });
+        const { city, units = "metric" } = req.query;
+
+        if (!city) {
+            return res.status(400).json({ error: "city is required" });
         }
 
-        const key = makeKey({ city, lat, lon, units });
-        const hit = cache.get(key);
-        if (hit && hit.expiresAt > Date.now()) {
-            return res.json({ source: "cache", ...hit.data });
+        const url = `${BASE_URL}/weather?q=${encodeURIComponent(
+            city
+        )}&appid=${API_KEY}&units=${units}`;
+
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            const text = await response.text();
+            console.error("OpenWeather Error:", response.status, text);
+            return res.status(response.status).json({
+                error: "OpenWeather request failed",
+                details: text,
+            });
         }
 
-        const apiKey = process.env.OPENWEATHER_API_KEY;
-        if (!apiKey) return res.status(500).json({ error: "Missing API key" });
+        const data = await response.json();
 
-        let qlat = lat, qlon = lon, qname = city;
-        if (city) {
-            const gUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(city)}&limit=1&appid=${apiKey}`;
-            const gRes = await fetch(gUrl);
-            const gRaw = await gRes.text();
-            let g;
-            try { g = JSON.parse(gRaw); } catch {
-                return res.status(502).json({ error: "Geocode returned non-JSON", raw: gRaw.slice(0, 200) });
-            }
-            if (!Array.isArray(g) || g.length === 0) return res.status(404).json({ error: "City not found" });
-            qlat = g[0].lat; qlon = g[0].lon;
-            qname = `${g[0].name}${g[0].state ? ", " + g[0].state : ""}, ${g[0].country}`;
-        }
-
-        const wUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${qlat}&lon=${qlon}&units=${units}&appid=${apiKey}`;
-        const wRes = await fetch(wUrl);
-        const wRaw = await wRes.text();
-        let w;
-        try { w = JSON.parse(wRaw); } catch {
-            return res.status(502).json({ error: "Weather returned non-JSON", raw: wRaw.slice(0, 200) });
-        }
-
-        if (!wRes.ok || (w.cod && Number(w.cod) !== 200)) {
-            const status = Number(w.cod) || wRes.status || 502;
-            return res.status(status).json({ error: w.message || "OpenWeather error", details: w });
-        }
-
-        const payload = {
-            city: qname || `${w.name}, ${w.sys?.country || ""}`,
-            coord: w.coord,
-            temp: w.main?.temp,
-            feels_like: w.main?.feels_like,
-            humidity: w.main?.humidity,
-            wind: w.wind,
-            weather: w.weather?.[0],
-            dt: w.dt,
-            units
-        };
-
-        cache.set(key, { data: payload, expiresAt: Date.now() + TTL_MS });
-        res.json({ source: "live", ...payload });
+        return res.json({
+            city: data.name,
+            country: data.sys.country,
+            temp: data.main.temp,
+            feels_like: data.main.feels_like,
+            description: data.weather[0].description,
+            icon: data.weather[0].icon,
+        });
     } catch (err) {
-        res.status(500).json({ error: "Server error", trace: String(err) });
+        console.error(err);
+        res.status(500).json({ error: "Server failure" });
     }
 });
 

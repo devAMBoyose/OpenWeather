@@ -1,11 +1,15 @@
-import { defineConfig } from "vite";          // standard Vite config import
-import react from "@vitejs/plugin-react";     // enables React JSX support
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
 
 export default defineConfig({
-    plugins: [react()],                         // activates React plugin
+    plugins: [react()],
     server: {
         port: 5173,
-        proxy: { "/api": "http://localhost:4000" }
-    }
-
+        proxy: {
+            "/api": {
+                target: "http://localhost:4001",   // 👈 same as server PORT
+                changeOrigin: true,
+            },
+        },
+    },
 });
