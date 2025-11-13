@@ -1,10 +1,16 @@
-const API_BASE = import.meta.env.VITE_API_BASE || "";
-export async function fetchCurrentWeather(query) {
-    const params = new URLSearchParams(query);
+// client/src/services/api.js
+const API_BASE =
+    import.meta.env.MODE === "production"
+        ? "https://<your-backend-name>.onrender.com" // Render backend URL
+        : "/api"; // dev: Vite proxy
+
+export async function fetchWeather(city, units) {
+    const params = new URLSearchParams({ city, units });
     const res = await fetch(`${API_BASE}/api/weather/current?${params.toString()}`);
-    const raw = await res.text();
-    let data = null;
-    try { data = raw ? JSON.parse(raw) : null; } catch { throw new Error(`Server returned non-JSON (${res.status})`); }
-    if (!res.ok) throw new Error(data?.error || `Request failed (${res.status})`);
-    return data;
+
+    if (!res.ok) {
+        throw new Error(`Request failed: ${res.status}`);
+    }
+
+    return await res.json();
 }
