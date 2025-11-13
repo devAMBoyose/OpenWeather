@@ -1,4 +1,5 @@
 // client/src/services/api.js
+
 const API_BASE =
     import.meta.env.MODE === "production"
         ? "https://openweather-backend.onrender.com"
@@ -13,4 +14,9 @@ export async function fetchWeather(city, units) {
     }
 
     return await res.json();
+}
+
+// 👇 alias so App.jsx import still works
+export async function fetchCurrentWeather(city, units) {
+    return fetchWeather(city, units);
 }
