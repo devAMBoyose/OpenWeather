@@ -1,24 +1,5 @@
 # 🌤️ OpenWeather Dashboard (Full-Stack)
 
-Folder Structure ==
-openweather-dashboard/
-├─ server/
-│  ├─ server.js
-│  ├─ routes/weather.js
-│  ├─ .env  (# has OPENWEATHER_API_KEY)
-│  └─ package.json
-└─ client/
-   ├─ src/
-   │  ├─ App.jsx
-   │  ├─ main.jsx
-   │  ├─ components/WeatherCard.jsx
-   │  ├─ services/api.js
-   │  └─ styles/
-   │     ├─ base.css
-   │     └─ responsive.css
-   ├─ vite.config.js
-   └─ package.json
-
 Real-time weather app built with **React (Vite)** and **Node.js/Express**.  
 The server hides the OpenWeather API key and adds basic rate-limit + cache.
 
